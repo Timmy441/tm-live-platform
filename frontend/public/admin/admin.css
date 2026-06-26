@@ -1,0 +1,5 @@
+body{background:linear-gradient(180deg,#071229,#071229 40%,#081227);color:#e6eef8}
+.wrap{max-width:1100px;margin:28px auto;padding:18px}
+.tabBtn{padding:8px 12px;border-radius:8px;border:none;background:transparent;color:#9fb1ff;cursor:pointer}
+.tabBtn.active{background:linear-gradient(90deg,#667eea,#764ba2);color:white}
+input,button{font-family:inherit}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TM Live — Admin</title>
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    /* small fallback styles */
+    body { font-family: system-ui, -apple-system, Roboto, 'Segoe UI', sans-serif; background:#0b1221; color:#e6eef8; margin:0 }
+    .wrap{max-width:1100px;margin:28px auto;padding:18px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px">
+      <div>
+        <h1 style="margin:0">TM Live — Admin Panel</h1>
+        <div id="adminStatus" style="font-size:13px;margin-top:6px"></div>
+      </div>
+      <button id="logoutBtn" style="display:none;padding:8px 14px;border-radius:8px;background:#e53e3e;border:none;color:white;cursor:pointer">Logout</button>
+    </header>
+
+    <section id="loginPanel">
+      <h2>Admin Login</h2>
+      <p>Sign in with your admin account to manage users.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="adminEmail" placeholder="admin email" style="padding:8px;border-radius:6px;border:1px solid #2b3350;background:#071024;color:#fff" />
+        <input id="adminPassword" type="password" placeholder="password" style="padding:8px;border-radius:6px;border:1px solid #2b3350;background:#071024;color:#fff" />
+        <button id="loginBtn" style="padding:8px 12px;border-radius:8px;background:#667eea;border:none;color:white;cursor:pointer">Login</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <input id="adminApiUrl" placeholder="Backend API URL, e.g. https://api.example.com" style="flex:1;padding:8px;border-radius:6px;border:1px solid #2b3350;background:#071024;color:#fff" />
+        <button id="saveApiUrlBtn" style="padding:8px 12px;border-radius:8px;background:#0ea5a4;border:none;color:white;cursor:pointer">Save API URL</button>
+      </div>
+      <p style="color:#9fb1ff;margin-top:8px">Or paste an admin token below</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="adminTokenInput" placeholder="Bearer token" style="flex:1;padding:8px;border-radius:6px;border:1px solid #2b3350;background:#071024;color:#fff" />
+        <button id="useTokenBtn" style="padding:8px 12px;border-radius:8px;background:#38a169;border:none;color:white;cursor:pointer">Use Token</button>
+      </div>
+    </section>
+
+    <section id="adminMain" style="display:none">
+      <div id="monitoringPanel" style="margin-bottom:20px;padding:18px;border:1px solid rgba(255,255,255,0.08);border-radius:14px;background:rgba(255,255,255,0.03)">
+        <h2 style="margin-top:0">Live Monitoring</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start;">
+          <div style="background:#071a34;padding:14px;border-radius:14px;">
+            <div style="font-size:12px;color:#9fb1ff;margin-bottom:6px">Active Users</div>
+            <div id="liveUserCount" style="font-size:32px;font-weight:800;color:#fff">0</div>
+          </div>
+          <div style="background:#071a34;padding:14px;border-radius:14px;">
+            <div style="font-size:12px;color:#9fb1ff;margin-bottom:6px">Live Streams</div>
+            <div id="liveStreamsCount" style="font-size:32px;font-weight:800;color:#fff">0</div>
+          </div>
+          <div style="background:#071a34;padding:14px;border-radius:14px;">
+            <div style="font-size:12px;color:#9fb1ff;margin-bottom:6px">Recent Admin Events</div>
+            <div id="adminEventSummary" style="font-size:24px;font-weight:700;color:#fff">0</div>
+          </div>
+        </div>
+        <div id="liveEventFeed" style="margin-top:18px;max-height:180px;overflow:auto;padding:10px;background:rgba(0,0,0,0.15);border-radius:12px;color:#cfe0ff;line-height:1.4;font-size:13px"></div>
+      </div>
+      <nav style="display:flex;gap:12px;margin:18px 0">
+        <button id="usersTab" class="tabBtn active">Users</button>
+        <button id="auditTab" class="tabBtn">Audit Logs</button>
+      </nav>
+
+      <div id="usersView">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <input id="userSearch" placeholder="Search users" style="padding:8px;border-radius:6px;border:1px solid #2b3350;background:#071024;color:#fff" />
+            <button id="searchBtn" style="margin-left:8px;padding:8px 10px;border-radius:8px;background:#667eea;border:none;color:white">Search</button>
+          </div>
+          <div>
+            <button id="refreshUsers" style="padding:8px 10px;border-radius:8px;background:#0ea5a4;border:none;color:white">Refresh</button>
+          </div>
+        </div>
+
+        <div id="usersList" style="margin-top:12px"></div>
+      </div>
+
+      <div id="auditView" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <h3>Recent Audit Logs</h3>
+          <button id="refreshAudit" style="padding:8px 10px;border-radius:8px;background:#0ea5a4;border:none;color:white">Refresh</button>
+        </div>
+        <div id="auditList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <footer style="margin-top:30px;color:#9fb1ff;font-size:13px">Admin panel runs against the same API server. Keep tokens secret.</footer>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

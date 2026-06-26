@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TM Live - Live Stream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            color:#eef2ff;
+            min-height:100vh;
+            background:
+                radial-gradient(circle at top left, rgba(102,126,234,0.18), transparent 22%),
+                radial-gradient(circle at bottom right, rgba(229,62,62,0.16), transparent 16%),
+                linear-gradient(180deg, rgba(3,12,25,0.96), rgba(3,12,25,0.96)),
+                url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat fixed;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.48));
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(8,15,38,0.96);
+            padding: 18px 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-action-btn,
+        .back-btn {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.25s ease;
+        }
+        .nav-action-btn:hover,
+        .back-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.22);
+        }
+
+        .discovery {
+            max-width: 1080px;
+            margin: 32px auto;
+            padding: 0 20px 30px;
+        }
+        .discovery h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+        .go-live-banner {
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(102,126,234,0.24);
+            border-radius: 20px;
+            padding: 36px 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 28px 80px rgba(0,0,0,0.18);
+        }
+        .go-live-banner h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .live-hero {
+            position: relative;
+            margin: 24px auto 0;
+            max-width: 1180px;
+            border-radius: 28px;
+            overflow: hidden;
+            min-height: 360px;
+            display: grid;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(7,12,27,0.92), rgba(7,12,27,0.90)), url('https://images.unsplash.com/photo-1615732643877-a77db6b8f633?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+            box-shadow: 0 40px 120px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .live-hero-overlay {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(5,9,24,0.72), rgba(10,14,30,0.72));
+        }
+        .live-hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 42px 32px;
+            max-width: 640px;
+            color: #ffffff;
+        }
+        .live-hero-content .eyebrow {
+            display: inline-flex;
+            margin-bottom: 16px;
+            color: #a5b4fc;
+            letter-spacing: 0.18em;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .live-hero-content h1 {
+            font-size: clamp(2.5rem, 4vw, 4.4rem);
+            line-height: 1.02;
+            margin-bottom: 18px;
+        }
+        .live-hero-content p {
+            max-width: 600px;
+            margin-bottom: 26px;
+            font-size: 16px;
+            color: rgba(255,255,255,0.78);
+            line-height: 1.7;
+        }
+        .live-hero .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+        .live-hero .nav-action-btn {
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: white;
+        }
+        .live-hero .nav-action-btn:hover {
+            background: rgba(255,255,255,0.24);
+        }
+        .go-live-banner p {
+            color: #d2d6ff;
+            margin-bottom: 24px;
+            font-size: 15px;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-live {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px 38px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .btn-live:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(102,126,234,0.35);
+        }
+        .live-badge {
+            background: #e53e3e;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+        .stream-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .status-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: center;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.12);
+        }
+        .status-title {
+            display: block;
+            color: #9aa7d8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            margin-bottom: 10px;
+        }
+        .status-card strong {
+            font-size: 28px;
+            color: #ffffff;
+            display: block;
+        }
+
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+        }
+        .stream-card {
+            background: rgba(6,10,22,0.88);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(102,126,234,0.14);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+        }
+        .stream-card:hover {
+            transform: translateY(-4px);
+            border-color: #667eea;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+        }
+        .stream-thumb {
+            height: 180px;
+            background: linear-gradient(135deg,#111827,#0f172a);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            position:relative;
+        }
+        .stream-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size: 24px;
+            font-weight: 700;
+            border: 3px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.06);
+        }
+        .stream-live-badge { position:absolute; top:14px; left:14px; }
+        .stream-viewers {
+            position:absolute;
+            top:14px;
+            right:14px;
+            background: rgba(0,0,0,0.55);
+            padding:6px 12px;
+            border-radius:999px;
+            font-size:12px;
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .stream-info {
+            padding:18px 18px 22px;
+        }
+        .stream-username {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+        .stream-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .no-streams {
+            text-align:center;
+            padding: 80px 20px;
+            color: #94a3b8;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px dashed rgba(148,163,184,0.35);
+        }
+        .no-streams i {
+            font-size: 48px;
+            margin-bottom: 18px;
+            display:block;
+            color: #667eea;
+        }
+
+        .stream-room {
+            display:none;
+            min-height: calc(100vh - 90px);
+            padding: 28px 20px 32px;
+        }
+        .stream-layout {
+            display:grid;
+            grid-template-columns: 1.2fr 360px;
+            gap: 22px;
+            height: 100%;
+        }
+        .stream-main {
+            position:relative;
+            background: linear-gradient(180deg, rgba(2,8,24,0.25), rgba(0,0,0,0.92)), url('Img/background img-3.jpg') center/cover no-repeat;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 32px 100px rgba(0,0,0,0.35);
+            min-height: 700px;
+        }
+        #streamVideo {
+            width:100%;
+            height:100%;
+            object-fit: cover;
+        }
+        .stream-overlay-top {
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            padding:24px 28px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            background: rgba(10,14,30,0.72);
+            backdrop-filter: blur(18px);
+        }
+        .streamer-info {
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+        .streamer-avatar-sm {
+            width:48px;
+            height:48px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:18px;
+            font-weight:700;
+            background: rgba(255,255,255,0.12);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+        .stream-overlay-top div > div {
+            line-height: 1.2;
+        }
+        .stream-overlay-top .live-badge {
+            margin-left: 12px;
+        }
+        .stream-stats {
+            display:flex;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+        }
+        .stat-pill {
+            background: rgba(255,255,255,0.08);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            display:flex;
+            align-items:center;
+            gap: 8px;
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-end-stream {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .btn-end-stream:hover { background:#c53030; transform: translateY(-1px); }
+
+        .stream-overlay {
+            position:absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            padding:22px 26px 26px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.92));
+            display:flex;
+            justify-content:flex-start;
+        }
+        .stream-controls {
+            display:flex;
+            gap:12px;
+        }
+        .ctrl-btn {
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            border:none;
+            background: rgba(255,255,255,0.12);
+            color:white;
+            font-size:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.22); }
+        .ctrl-btn.off { background: rgba(229,62,62,0.85); }
+
+        .stream-chat {
+            background: rgba(8,12,24,0.96);
+            display:flex;
+            flex-direction:column;
+            border-radius: 0 28px 28px 0;
+            border: 1px solid rgba(102,126,234,0.16);
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+        }
+        .chat-header {
+            padding: 24px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap: 10px;
+            background: rgba(15,20,42,0.98);
+        }
+        .chat-header h3 {
+            font-size: 17px;
+            display:flex;
+            align-items:center;
+            gap: 10px;
+            color: #ffffff;
+        }
+        #chatViewers {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+        .stream-messages {
+            flex:1;
+            overflow-y:auto;
+            padding:24px 22px;
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+            background: linear-gradient(180deg, rgba(15,20,42,0.92), rgba(7,11,23,0.96));
+        }
+        .stream-msg {
+            font-size:14px;
+            line-height:1.6;
+            padding:14px 16px;
+            border-radius:18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #e2e8f0;
+            word-break: break-word;
+        }
+        .stream-msg .msg-user {
+            color:#93c5fd;
+            font-weight:700;
+        }
+        .stream-msg.system {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(148,163,184,0.18);
+            color: #cbd5e1;
+            text-align:center;
+            font-style:italic;
+            font-size:13px;
+        }
+        .stream-msg.gift {
+            background: rgba(212,160,23,0.16);
+            border: 1px solid rgba(212,160,23,0.35);
+            color: #f8fafc;
+        }
+        .chat-input-area {
+            padding: 20px 22px;
+            display:flex;
+            gap:12px;
+            align-items:center;
+            border-top:1px solid rgba(255,255,255,0.08);
+            background: rgba(10,14,28,0.98);
+        }
+        .chat-input-area input {
+            flex:1;
+            min-width:0;
+            padding:16px 18px;
+            background: rgba(255,255,255,0.08);
+            border:1px solid rgba(255,255,255,0.14);
+            border-radius:16px;
+            color:white;
+            font-size:14px;
+            outline:none;
+        }
+        .chat-input-area input::placeholder { color: rgba(255,255,255,0.58); }
+        .chat-input-area .send-btn {
+            width:56px;
+            height:56px;
+            border-radius:50%;
+            padding:0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border:none;
+            font-size:18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .chat-input-area .send-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(102,126,234,0.35); }
+
+        .gift-bar {
+            padding:16px 22px;
+            border-top:1px solid rgba(255,255,255,0.08);
+            display:flex;
+            gap:10px;
+            overflow-x:auto;
+            background: rgba(8,12,24,0.95);
+        }
+        .quick-gift {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color:white;
+            padding:10px 14px;
+            border-radius:20px;
+            cursor:pointer;
+            font-size:13px;
+            white-space:nowrap;
+            transition: all 0.2s ease;
+        }
+        .quick-gift:hover { background: rgba(102,126,234,0.3); }
+
+        .stream-highlights {
+            max-width:1000px;
+            margin:0 auto 32px;
+            padding:0 20px;
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+            gap:18px;
+        }
+        .stream-highlights > div {
+            background: rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:20px;
+            padding:24px;
+            backdrop-filter: blur(16px);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .stream-highlights > div:hover {
+            transform: translateY(-2px);
+            border-color: rgba(102,126,234,0.28);
+        }
+        .stream-highlights h4 {
+            margin:0 0 10px;
+            color:#ffffff;
+        }
+        .stream-highlights p {
+            margin:0;
+            color: rgba(255,255,255,0.75);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 1024px) {
+            .stream-layout { grid-template-columns: 1fr; }
+            .stream-room { min-height: auto; }
+            .stream-chat { border-radius: 0 0 24px 24px; }
+            .stream-main { min-height: 520px; }
+        }
+        @media (max-width: 720px) {
+            .navbar { padding: 16px 18px; }
+            .nav-actions { justify-content: center; }
+            .go-live-banner { padding: 28px 22px; }
+            .stream-status-cards { grid-template-columns: 1fr; }
+            .stream-card { min-height: 260px; }
+            .chat-input-area { flex-direction: column; align-items: stretch; }
+            .chat-input-area .send-btn { width: 100%; }
+            .stream-layout { gap: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="index.html">
+        <img src="favicon.svg" style="width:28px;height:28px;border-radius:6px;"> TM Live
+    </a>
+    <div class="nav-actions">
+        <button class="nav-action-btn" onclick="window.location.href='index.html'">Dashboard</button>
+        <button class="nav-action-btn" onclick="window.location.href='profile.html'">Profile</button>
+        <button class="nav-action-btn" onclick="window.location.href='earnings.html'">Earnings</button>
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+</nav>
+
+<!-- Hero Banner -->
+<div class="live-hero">
+    <div class="live-hero-overlay"></div>
+    <div class="live-hero-content">
+        <span class="eyebrow">Live Broadcast</span>
+        <h1>Stream with confidence. Build your audience now.</h1>
+        <p>Launch high-quality live streams with real-time chat, gifts, and premium engagement tools.</p>
+        <div class="hero-actions">
+            <button class="btn-live" onclick="startStream()"><i class="fas fa-circle"></i> Start Streaming</button>
+            <button class="nav-action-btn" onclick="window.location.href='profile.html'">View Profile</button>
+        </div>
+    </div>
+</div>
+
+<!-- Discovery Page -->
+<div class="discovery" id="discoveryPage">
+    <div class="go-live-banner">
+        <h3>🔴 Go Live</h3>
+        <p>Start streaming to your followers right now. Share your moments live!</p>
+        <button class="btn-live" onclick="startStream()">
+            <i class="fas fa-circle"></i> Start Live Stream
+        </button>
+    </div>
+
+    <div class="stream-status-cards">
+        <div class="status-card">
+            <span class="status-title">Live Channels</span>
+            <strong>03</strong>
+        </div>
+        <div class="status-card">
+            <span class="status-title">Active Viewers</span>
+            <strong>1.2K</strong>
+        </div>
+        <div class="status-card">
+            <span class="status-title">Chat Messages</span>
+            <strong>842</strong>
+        </div>
+        <div class="status-card">
+            <span class="status-title">Top Gift</span>
+            <strong>Diamond</strong>
+        </div>
+    </div>
+
+    <h2><span class="live-badge">LIVE</span> Live Now</h2>
+    <div class="streams-grid" id="streamsGrid">
+        <div class="no-streams">
+            <i class="fas fa-broadcast-tower"></i>
+            <p>No one is live right now</p>
+            <p style="font-size:13px; margin-top:8px;">Be the first to go live!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Stream Room -->
+<div class="stream-room" id="streamRoom">
+    <div class="stream-layout">
+        <!-- Video -->
+        <div class="stream-main">
+            <video id="streamVideo" autoplay playsinline muted></video>
+
+            <!-- Top overlay -->
+            <div class="stream-overlay-top">
+                <div class="streamer-info">
+                    <div class="streamer-avatar-sm" id="streamAvatarSm" style="background:#667eea;">T</div>
+                    <div>
+                        <div style="font-size:14px; font-weight:700;" id="streamTitle">Live Stream</div>
+                        <div style="font-size:12px; color:#ccc;" id="streamDuration">00:00</div>
+                    </div>
+                    <span class="live-badge" style="margin-left:8px;">LIVE</span>
+                </div>
+                <div class="stream-stats">
+                    <div class="stat-pill"><i class="fas fa-eye"></i> <span id="viewerCount">0</span></div>
+                    <button class="btn-end-stream" id="endStreamBtn" style="display:none;" onclick="endStream()">End Stream</button>
+                    <button class="btn-end-stream" id="leaveStreamBtn" style="display:none; background:#667eea;" onclick="leaveStream()">Leave</button>
+                </div>
+            </div>
+
+            <!-- Bottom controls (streamer only) -->
+            <div class="stream-overlay" id="streamerControls" style="display:none;">
+                <div class="stream-controls">
+                    <button class="ctrl-btn" id="camBtn" onclick="toggleStreamCam()" title="Toggle Camera">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="ctrl-btn" id="micBtn" onclick="toggleStreamMic()" title="Toggle Mic">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="stream-chat">
+            <div class="chat-header">
+                <h3><i class="fas fa-comment-dots"></i> Live Chat</h3>
+                <span style="font-size:12px; color:#999;" id="chatViewers">0 watching</span>
+            </div>
+            <div class="stream-messages" id="streamMessages"></div>
+
+            <!-- Quick gifts for viewers -->
+            <div class="gift-bar" id="giftBar" style="display:none;">
+                <button class="quick-gift" onclick="sendStreamGift('Rose','🌹',10)">🌹 10💎</button>
+                <button class="quick-gift" onclick="sendStreamGift('Heart','❤️',20)">❤️ 20💎</button>
+                <button class="quick-gift" onclick="sendStreamGift('Star','⭐',50)">⭐ 50💎</button>
+                <button class="quick-gift" onclick="sendStreamGift('Crown','👑',100)">👑 100💎</button>
+                <button class="quick-gift" onclick="sendStreamGift('Diamond','💎',200)">💎 200💎</button>
+                <button class="quick-gift" onclick="sendStreamGift('Rocket','🚀',500)">🚀 500💎</button>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="streamChatInput" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendStreamComment()">
+                <button class="send-btn" onclick="sendStreamComment()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stream-highlights" style="max-width:1000px; margin:0 auto 24px; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+    <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px; backdrop-filter: blur(10px);">
+        <h4 style="margin:0 0 8px; color:#fff;">Go live anytime</h4>
+        <p style="margin:0; color:rgba(255,255,255,0.75); font-size:14px;">One click live streaming, camera + mic only.</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px; backdrop-filter: blur(10px);">
+        <h4 style="margin:0 0 8px; color:#fff;">Real-time chat</h4>
+        <p style="margin:0; color:rgba(255,255,255,0.75); font-size:14px;">Live comments, gift alerts, and quick viewer interaction.</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px; backdrop-filter: blur(10px);">
+        <h4 style="margin:0 0 8px; color:#fff;">River-style overlay</h4>
+        <p style="margin:0; color:rgba(255,255,255,0.75); font-size:14px;">A rich visual atmosphere perfect for premium livestream experiences.</p>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const token = localStorage.getItem('tm_token');
+const myUsername = localStorage.getItem('tm_username');
+if (!token) window.location.href = 'login.html';
+
+const socket = io('http://localhost:5001');
+socket.emit('user_join', myUsername);
+
+let isStreamer = false;
+let localStream = null;
+let currentRoomId = null;
+let streamStartTime = null;
+let durationInterval = null;
+let peerConnections = {}; // for streamer: { viewerSocketId: RTCPeerConnection }
+let streamerSocketId = null; // for viewer
+
+const AVATAR_COLORS = ['#667eea','#764ba2','#f5576c','#f093fb','#38a169','#d4a017','#e53e3e','#3182ce'];
+function getAvatarBg(username) {
+    const idx = username.split('').reduce((a,c) => a+c.charCodeAt(0),0) % AVATAR_COLORS.length;
+    return AVATAR_COLORS[idx];
+}
+
+// Check URL for auto-join stream
+const params = new URLSearchParams(window.location.search);
+const joinRoom = params.get('room');
+if (joinRoom) setTimeout(() => joinStream(joinRoom), 1000);
+
+// ===== DISCOVERY =====
+socket.on('active_streams', (streams) => {
+    renderStreams(streams);
+});
+
+socket.on('stream_started', (data) => {
+    addStreamCard(data);
+});
+
+socket.on('stream_finished', (data) => {
+    document.getElementById('stream_' + data.streamerId)?.remove();
+    checkNoStreams();
+});
+
+function renderStreams(streams) {
+    const grid = document.getElementById('streamsGrid');
+    if (!streams || streams.length === 0) {
+        grid.innerHTML = `<div class="no-streams"><i class="fas fa-broadcast-tower"></i><p>No one is live right now</p><p style="font-size:13px;margin-top:8px;">Be the first to go live!</p></div>`;
+        return;
+    }
+    grid.innerHTML = '';
+    streams.forEach(addStreamCard);
+}
+
+function addStreamCard(data) {
+    const grid = document.getElementById('streamsGrid');
+    const noStreams = grid.querySelector('.no-streams');
+    if (noStreams) noStreams.remove();
+
+    const card = document.createElement('div');
+    card.className = 'stream-card';
+    card.id = 'stream_' + data.streamerId;
+    const bg = getAvatarBg(data.username);
+    card.innerHTML = `
+        <div class="stream-thumb">
+            <div class="stream-avatar" style="background:${bg};">${data.username[0].toUpperCase()}</div>
+            <div class="stream-live-badge"><span class="live-badge">LIVE</span></div>
+            <div class="stream-viewers"><i class="fas fa-eye"></i> <span id="vc_${data.streamerId}">${data.viewerCount || 0}</span></div>
+        </div>
+        <div class="stream-info">
+            <div class="stream-username">${data.username}</div>
+            <div class="stream-time">Started just now</div>
+        </div>
+    `;
+    card.onclick = () => joinStream(data.roomId, data.streamerId, data.username);
+    grid.appendChild(card);
+}
+
+function checkNoStreams() {
+    const grid = document.getElementById('streamsGrid');
+    if (grid.children.length === 0) {
+        grid.innerHTML = `<div class="no-streams"><i class="fas fa-broadcast-tower"></i><p>No one is live right now</p><p style="font-size:13px;margin-top:8px;">Be the first to go live!</p></div>`;
+    }
+}
+
+// ===== START STREAM =====
+async function startStream() {
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('streamVideo').srcObject = localStream;
+        document.getElementById('streamVideo').muted = true;
+
+        isStreamer = true;
+        showStreamRoom(myUsername, true);
+
+        socket.emit('start_stream', { username: myUsername });
+
+        streamStartTime = Date.now();
+        durationInterval = setInterval(updateDuration, 1000);
+    } catch (err) {
+        alert('Could not access camera/mic: ' + err.message);
+    }
+}
+
+// ===== JOIN STREAM AS VIEWER =====
+async function joinStream(roomId, sId, username) {
+    currentRoomId = roomId;
+    streamerSocketId = sId;
+    isStreamer = false;
+
+    showStreamRoom(username || 'Streamer', false);
+    socket.emit('join_stream', { roomId, username: myUsername });
+}
+
+function showStreamRoom(streamerName, asStreamer) {
+    document.getElementById('discoveryPage').style.display = 'none';
+    document.getElementById('streamRoom').style.display = 'block';
+
+    const bg = getAvatarBg(streamerName);
+    document.getElementById('streamAvatarSm').textContent = streamerName[0].toUpperCase();
+    document.getElementById('streamAvatarSm').style.background = bg;
+    document.getElementById('streamTitle').textContent = asStreamer ? `${myUsername}'s Live` : `${streamerName}'s Live`;
+
+    if (asStreamer) {
+        document.getElementById('endStreamBtn').style.display = 'block';
+        document.getElementById('streamerControls').style.display = 'block';
+        document.getElementById('giftBar').style.display = 'none';
+    } else {
+        document.getElementById('leaveStreamBtn').style.display = 'block';
+        document.getElementById('giftBar').style.display = 'flex';
+    }
+}
+
+// ===== STREAM EVENTS =====
+socket.on('viewer_joined', (data) => {
+    document.getElementById('viewerCount').textContent = data.viewerCount;
+    document.getElementById('chatViewers').textContent = data.viewerCount + ' watching';
+    addStreamMessage('System', `${data.username} joined`, 'system');
+
+    // Send WebRTC offer to new viewer
+    if (isStreamer && localStream) {
+        createOfferForViewer(data.viewerSocketId);
+    }
+});
+
+socket.on('viewer_left', (data) => {
+    document.getElementById('viewerCount').textContent = data.viewerCount;
+    document.getElementById('chatViewers').textContent = data.viewerCount + ' watching';
+});
+
+socket.on('stream_info', (data) => {
+    currentRoomId = data.roomId;
+    streamerSocketId = data.streamerId;
+    document.getElementById('viewerCount').textContent = data.viewerCount;
+});
+
+socket.on('stream_comment', (data) => {
+    addStreamMessage(data.username, data.message, data.username === 'System' ? 'system' : 'normal');
+});
+
+socket.on('stream_gift', (data) => {
+    addStreamMessage('Gift', `${data.fromUser} sent ${data.giftEmoji} ${data.giftName} (${data.diamonds}💎)`, 'gift');
+});
+
+socket.on('stream_ended', (data) => {
+    if (!isStreamer) {
+        alert(`${data.username}'s stream has ended.`);
+        goBack();
+    }
+});
+
+// ===== WebRTC for stream =====
+async function createOfferForViewer(viewerSocketId) {
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    peerConnections[viewerSocketId] = pc;
+
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('stream_ice', { target: viewerSocketId, candidate: e.candidate });
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('stream_offer', { viewerSocketId, offer });
+}
+
+socket.on('stream_offer', async (data) => {
+    if (isStreamer) return;
+    streamerSocketId = data.streamerId;
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    peerConnections['streamer'] = pc;
+
+    pc.ontrack = (e) => {
+        document.getElementById('streamVideo').srcObject = e.streams[0];
+        document.getElementById('streamVideo').muted = false;
+    };
+
+    pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('stream_ice', { target: data.streamerId, candidate: e.candidate });
+    };
+
+    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('stream_answer', { streamerId: data.streamerId, answer });
+});
+
+socket.on('stream_answer', async (data) => {
+    const pc = peerConnections[data.viewerSocketId];
+    if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+});
+
+socket.on('stream_ice', async (data) => {
+    const pc = isStreamer ? peerConnections[data.from] : peerConnections['streamer'];
+    if (pc && data.candidate) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+});
+
+// ===== CONTROLS =====
+let camOn = true, micOn = true;
+
+function toggleStreamCam() {
+    camOn = !camOn;
+    localStream.getVideoTracks().forEach(t => t.enabled = camOn);
+    const btn = document.getElementById('camBtn');
+    btn.classList.toggle('off', !camOn);
+    btn.innerHTML = `<i class="fas fa-video${camOn ? '' : '-slash'}"></i>`;
+}
+
+function toggleStreamMic() {
+    micOn = !micOn;
+    localStream.getAudioTracks().forEach(t => t.enabled = micOn);
+    const btn = document.getElementById('micBtn');
+    btn.classList.toggle('off', !micOn);
+    btn.innerHTML = `<i class="fas fa-microphone${micOn ? '' : '-slash'}"></i>`;
+}
+
+function endStream() {
+    if (!confirm('Are you sure you want to end your stream?')) return;
+    socket.emit('end_stream', {});
+    stopStream();
+    goBack();
+}
+
+function leaveStream() {
+    socket.emit('leave_stream', { roomId: currentRoomId, username: myUsername });
+    Object.values(peerConnections).forEach(pc => pc.close());
+    peerConnections = {};
+    goBack();
+}
+
+function stopStream() {
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    Object.values(peerConnections).forEach(pc => pc.close());
+    peerConnections = {};
+    if (durationInterval) clearInterval(durationInterval);
+}
+
+// ===== CHAT =====
+function sendStreamComment() {
+    const input = document.getElementById('streamChatInput');
+    const msg = input.value.trim();
+    if (!msg || !currentRoomId) return;
+    socket.emit('stream_comment', { roomId: currentRoomId, username: myUsername, message: msg });
+    input.value = '';
+}
+
+async function sendStreamGift(giftName, giftEmoji, diamonds) {
+    if (!streamerSocketId) return;
+    try {
+        // Get streamer username from stream info
+        const streamerUsername = document.getElementById('streamTitle').textContent.replace("'s Live", '');
+        const res = await fetch('http://localhost:5001/api/auth/send-gift', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ toUsername: streamerUsername, giftName, giftEmoji, diamonds })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            socket.emit('gift_sent', { fromUser: myUsername, toUser: streamerUsername, giftName, giftEmoji, diamonds, streamRoom: currentRoomId });
+        } else {
+            alert(data.message);
+        }
+    } catch (err) {
+        alert('Could not send gift');
+    }
+}
+
+function addStreamMessage(username, message, type) {
+    const msgs = document.getElementById('streamMessages');
+    const div = document.createElement('div');
+    div.className = `stream-msg ${type}`;
+    if (type === 'system') {
+        div.textContent = message;
+    } else if (type === 'gift') {
+        div.textContent = message;
+    } else {
+        div.innerHTML = `<span class="msg-user">${username}</span>${message}`;
+    }
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function updateDuration() {
+    const elapsed = Math.floor((Date.now() - streamStartTime) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('streamDuration').textContent = `${m}:${s}`;
+}
+
+function goBack() {
+    stopStream();
+    window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

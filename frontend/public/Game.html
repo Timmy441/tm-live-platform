@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameHub Arena</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#07111f;color:#e8f1ff;min-height:100vh;overflow-x:hidden}
+    .bg-glow{position:fixed;inset:0;background:radial-gradient(circle at top left,#1b4dff33,transparent 35%),radial-gradient(circle at top right,#7c3aed33,transparent 30%),radial-gradient(circle at bottom,#00ffb233,transparent 30%);z-index:-1}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:24px 28px;gap:16px}
+    .topbar h1{margin:0;font-size:2rem}
+    .topbar p{margin:6px 0 0;color:#9fb3d1}
+    .status-pill{padding:10px 14px;border:1px solid #2f4366;border-radius:999px;background:#0f1b2d;color:#9fb3d1}
+    .layout{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;padding:0 24px 24px;max-width:1400px;margin:auto}
+    .panel{background:rgba(8,18,33,.82);border:1px solid rgba(120,160,255,.15);backdrop-filter:blur(14px);border-radius:22px;box-shadow:0 20px 60px #00000045;padding:22px}
+    .hero{grid-column:1/-1;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;align-items:stretch}
+    .eyebrow{display:inline-block;padding:8px 12px;border-radius:999px;background:#12345c;color:#91c7ff;font-size:.85rem;margin-bottom:12px}
+    .hero h2{margin:0 0 10px;font-size:2.3rem;line-height:1.1}
+    .hero p{margin:0;color:#a9bdd8;max-width:60ch}
+    .actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+    .btn{border:none;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;transition:.2s transform,.2s opacity}
+    .btn:hover{transform:translateY(-2px)}
+    .primary{background:linear-gradient(135deg,#00d4ff,#4f46e5);color:#fff}
+    .secondary{background:#11243f;color:#d6e4ff;border:1px solid #254268}
+    .room-card{background:linear-gradient(180deg,#0c1626,#0a1320);border:1px solid #233555;border-radius:18px;padding:18px}
+    .room-card h3,.games h3,.board-header h3,.mini-panel h3{margin-top:0}
+    .room-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #1c2a40}
+    .room-row:last-child{border-bottom:none}
+    .game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .game-card{background:#0d1728;color:#dbe7ff;border:1px solid #233555;border-radius:18px;padding:16px;text-align:left;cursor:pointer;transition:.2s transform,.2s border,.2s background}
+    .game-card span{display:block;font-size:1.9rem;margin-bottom:10px}
+    .game-card strong{display:block;font-size:1.05rem;margin-bottom:4px}
+    .game-card small{color:#9fb3d1}
+    .game-card:hover,.game-card.active{transform:translateY(-3px);border-color:#5eead4;background:#12233d}
+    .board-panel{grid-column:1/2}
+    .board-header{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+    .scoreboard{display:flex;gap:14px;flex-wrap:wrap}
+    .scoreboard div{background:#0d1728;border:1px solid #233555;border-radius:14px;padding:10px 14px;min-width:92px;text-align:center}
+    .scoreboard span{display:block;color:#8da4c4;font-size:.8rem}
+    .scoreboard strong{font-size:1.2rem}
+    .board-wrap{display:flex;justify-content:center;padding:18px 0}
+    .board-wrap canvas{background:#06111f;border:2px solid #2e4770;border-radius:18px;box-shadow:0 0 0 1px #00d4ff33,0 0 45px #00d4ff1a;display:block;width:100%;height:auto;max-width:640px;aspect-ratio:1/1}
+    /* Fullscreen HUD and animations */
+    .fullscreen-active #gameCanvas{transition:transform .28s cubic-bezier(.2,.9,.3,1),box-shadow .28s;transform:scale(1.02)}
+    #fsHud{position:fixed;top:18px;left:18px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,rgba(8,18,33,.75),rgba(12,20,36,.65));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.04);color:#e8f1ff;z-index:9999;opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s}
+    #fsHud.show{opacity:1;transform:translateY(0)}
+    #fsHud .title{font-weight:700}
+    #fsHud .mini-controls{display:flex;gap:8px}
+    #fsHud .mini-controls .btn{padding:8px 10px;border-radius:10px;font-size:.9rem}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .help{color:#9fb3d1;text-align:center}
+    .side-panels{display:grid;gap:18px}
+    .mini-panel{background:#0d1728;border:1px solid #233555;border-radius:18px;padding:18px}
+    .chat-box{display:grid;gap:10px;max-height:240px;overflow:auto}
+    .chat-msg{padding:10px 12px;border-radius:14px;background:#12233d;color:#dbe7ff}
+    .chat-msg.me{background:#183658}
+    .mini-panel ul{margin:0;padding-left:18px;color:#c8d6eb}
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .hero,.board-panel{grid-column:auto}
+      .hero{grid-template-columns:1fr}
+      .game-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 640px){
+      .topbar,.layout{padding:16px}
+      .hero h2{font-size:1.7rem}
+      .game-grid{grid-template-columns:1fr}
+      .board-wrap canvas{width:min(92vw,480px);height:min(92vw,480px)}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <header class="topbar">
+    <div>
+      <h1>GameHub Arena</h1>
+      <p>Play Snake, Chess, Ludo, and Monopoly-style games in one place.</p>
+    </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a class="btn secondary" href="index.html">← Dashboard</a>
+        <div class="status-pill" id="connectionStatus">Offline</div>
+      </div>
+        <p>Built for real-time play with Socket.io, chat, video call, and live stream support.</p>
+        <div class="actions">
+          <button class="btn primary" id="createRoomBtn">Create Room</button>
+          <button class="btn secondary" id="joinRoomBtn">Join Room</button>
+        </div>
+      </div>
+      <div class="room-card">
+        <h3>Room Panel</h3>
+        <div class="room-row"><span>Room Code</span><strong id="roomCode">—</strong></div>
+        <div class="room-row"><span>Players</span><strong id="playerCount">1/4</strong></div>
+        <div class="room-row"><span>Mode</span><strong id="gameMode">Snake</strong></div>
+        <div class="room-row"><span>Ready</span><strong id="readyState">No</strong></div>
+      </div>
+    </section>
+
+    <section class="panel games">
+      <h3>Select a Game</h3>
+      <div class="game-grid" id="gameGrid">
+        <button class="game-card active" data-game="Snake">
+          <span>🐍</span>
+          <strong>Snake</strong>
+          <small>Fast, fun, and multiplayer-ready.</small>
+        </button>
+        <button class="game-card" data-game="Chess">
+          <span>♟️</span>
+          <strong>Chess</strong>
+          <small>Classic strategy battle.</small>
+        </button>
+        <button class="game-card" data-game="Ludo">
+          <span>🎲</span>
+          <strong>Ludo</strong>
+          <small>Party game for 2 to 4 players.</small>
+        </button>
+        <button class="game-card" data-game="Monopoly">
+          <span>🏠</span>
+          <strong>Monopoly</strong>
+          <small>Trade, build, and win big.</small>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="board-header">
+        <h3>Game Arena</h3>
+        <div class="scoreboard">
+          <div><span>Score</span><strong id="score">0</strong></div>
+          <div><span>Best</span><strong id="bestScore">0</strong></div>
+          <div><span>Speed</span><strong id="speed">1x</strong></div>
+        </div>
+      </div>
+      <div class="board-wrap">
+          <canvas id="gameCanvas" width="480" height="480"></canvas>
+          <button id="exitFullscreenBtn" class="btn secondary" style="display:none;position:fixed;top:18px;right:18px;z-index:9999;border-radius:12px;">Exit Fullscreen</button>
+          <div id="fsHud">
+            <div class="title" id="fsGameTitle">Game</div>
+            <div class="mini-controls">
+              <button id="fsPauseBtn" class="btn secondary">Pause</button>
+              <button id="fsRestartBtn" class="btn secondary">Restart</button>
+            </div>
+          </div>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" id="startBtn">Start</button>
+        <button class="btn secondary" id="pauseBtn">Pause</button>
+        <button class="btn secondary" id="restartBtn">Restart</button>
+      </div>
+      <div class="help">
+        <p id="gameHelp">Use arrow keys or WASD to move. Eat food, avoid walls, and beat your high score.</p>
+      </div>
+    </section>
+
+    <section class="panel side-panels">
+      <div class="mini-panel">
+        <h3>Chat</h3>
+        <div class="chat-box">
+          <div class="chat-msg">Welcome to the arena.</div>
+          <div class="chat-msg me">Ready to play?</div>
+        </div>
+      </div>
+      <div class="mini-panel">
+        <h3>Live Tools</h3>
+        <ul>
+          <li>Video call</li>
+          <li>Live stream</li>
+          <li>Real-time lobby</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

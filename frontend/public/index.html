@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TM Live - Professional Video Chat Platform</title>
+  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Page Loader -->
+    <div id="pageLoader" style="
+        position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999;
+        background: #0f0f1a url('../img/Background_1.jpg') center/cover no-repeat;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        transition: opacity 0.5s ease;
+    ">
+        <div style="text-align:center;">
+            <img src="favicon.svg" style="width:80px;height:80px;border-radius:20px;margin-bottom:20px;animation:pulse 1.5s infinite;">
+            <div style="font-size:28px;font-weight:700;color:white;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">TM Live</div>
+            <div style="color:#999;font-size:13px;margin-bottom:24px;">Professional Video Chat Platform</div>
+            <div style="display:flex;gap:8px;justify-content:center;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#667eea;animation:bounce 1.2s infinite 0s;"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#764ba2;animation:bounce 1.2s infinite 0.2s;"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#f5576c;animation:bounce 1.2s infinite 0.4s;"></div>
+            </div>
+        </div>
+        <style>
+            @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-12px)} }
+            @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.8} }
+        </style>
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loader = document.getElementById('pageLoader');
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+            }, 1200);
+        });
+    </script>
+    <div class="app-container">
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notificationPanel">
+            <div class="notification-header">
+                <h3><i class="fas fa-bell"></i> Notifications</h3>
+                <button class="close-notifications" onclick="closeNotifications()">×</button>
+            </div>
+            <div class="notification-list" id="notificationList"></div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <i class="fas fa-video header-icon"></i>
+                    <h1>TM Live</h1>
+                </div>
+                <div class="header-center header-center--stack">
+                    <h2>Professional Video Chat Platform</h2>
+                    <nav class="header-links">
+                        <a class="nav-link active" href="index.html">Dashboard</a>
+                        <a class="nav-link" href="livestream.html">Live</a>
+                        <a class="nav-link" href="earnings.html">Earnings</a>
+                        <a class="nav-link" href="profile.html">Profile</a>
+                        <a class="nav-link" href="Game.html">Games</a>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <button class="notification-btn" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count" id="notificationCount">0</span>
+                    </button>
+                    <button class="settings-btn" onclick="showSettings()">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </button>
+                    <button class="dark-mode-btn" onclick="window.location.href='earnings.html'" style="background: #d4a017; margin-left: 8px;">
+                        <i class="fas fa-coins"></i>
+                        <span>Earnings</span>
+                    </button>
+                    <button class="dark-mode-btn" onclick="logout()" style="background: #e53e3e; margin-left: 8px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Status Bar -->
+            <div class="status-bar" id="statusBar">
+                <i class="fas fa-check-circle"></i>
+                <span id="statusText">Connected as Guest</span>
+            </div>
+
+            <section class="hero-section">
+                <div class="hero-copy">
+                    <span class="eyebrow">Creator dashboard</span>
+                    <h1>Stream with confidence. Grow your audience.</h1>
+                    <p class="hero-subtitle">Launch live broadcasts, manage chat, and monitor earnings from a premium dashboard experience.</p>
+                    <div class="hero-actions">
+                        <button class="hero-btn-primary" onclick="startLiveStream()">Go Live Now</button>
+                        <button class="hero-btn-secondary" onclick="window.location.href='earnings.html'">View Earnings</button>
+                    </div>
+                </div>
+                <div class="hero-side">
+                    <div class="hero-visual">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80" alt="Live streaming studio" loading="lazy" />
+                    </div>
+                    <div class="hero-metrics">
+                    <div class="metric-card">
+                        <span class="metric-title">Active Streamers</span>
+                        <strong>12</strong>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Live Chats</span>
+                        <strong>64</strong>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Weekly Views</span>
+                        <strong>23.4K</strong>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Total Earnings</span>
+                        <strong>$5.2K</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <div class="game-room-card">
+                    <div class="game-room-header">
+                        <div>
+                            <span class="game-room-icon">🎮</span>
+                            <h3>Snake Arena</h3>
+                        </div>
+                        <div class="game-room-status">Players: <strong id="gamePlayersCount">2/4</strong></div>
+                    </div>
+                    <p class="game-room-description">Jump into the game lobby and stay connected using the same live stream, chat, and video call tools you already use.</p>
+                    <div class="game-room-actions">
+                        <button class="game-room-btn" onclick="window.location.href='Game.html'">
+                            <i class="fas fa-compact-disc"></i> Open Game Hub
+                        </button>
+                        <button class="game-room-btn" onclick="openGameModal('snake')">
+                            <i class="fas fa-gamepad"></i> Play Snake
+                        </button>
+                        <button class="game-room-btn" onclick="openGameModal('football')">
+                            <i class="fas fa-futbol"></i> Football
+                        </button>
+                        <button class="game-room-btn" onclick="openGameModal('chess')">
+                            <i class="fas fa-chess-rook"></i> Chess
+                        </button>
+                        <button class="game-room-btn" onclick="openGameModal('ludo')">
+                            <i class="fas fa-cube"></i> Ludo
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="panel-controls">
+                <button class="panel-btn active" data-panel="online" onclick="showDashboardPanel('online')">Online Users</button>
+                <button class="panel-btn" data-panel="recent" onclick="showDashboardPanel('recent')">Recent Calls</button>
+                <button class="panel-btn" data-panel="chat" onclick="showDashboardPanel('chat')">Chat Room</button>
+            </div>
+
+            <!-- Video Container -->
+            <div class="video-container" id="videoContainer" style="display: none;">
+                <div class="video-box local">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-overlay">
+                        <div class="video-label">
+                            <i class="fas fa-user"></i>
+                            <span id="localUserName">You</span>
+                        </div>
+                        <div class="video-status" id="localStatus">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    </div>
+                    <div class="video-controls">
+                        <button class="control-btn" onclick="toggleCamera()" title="Toggle Camera">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button class="control-btn" onclick="toggleMicrophone()" title="Toggle Microphone">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="control-btn" onclick="shareScreen()" title="Share Screen">
+                            <i class="fas fa-desktop"></i>
+                        </button>
+                        <button class="control-btn end-call" onclick="endCall()" title="End Call">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="video-box remote">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-overlay">
+                        <div class="video-label">
+                            <i class="fas fa-user-friend"></i>
+                            <span id="remoteUserName">Remote</span>
+                        </div>
+                        <div class="video-status" id="remoteStatus">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Layout -->
+            <div class="main-layout">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-section" id="onlineSection">
+                        <h3><i class="fas fa-users"></i> Online Users</h3>
+                        <div class="user-list" id="userList"></div>
+                    </div>
+                    
+                    <div class="sidebar-section" id="recentSection" style="display:none;">
+                        <h3><i class="fas fa-history"></i> Recent Calls</h3>
+                        <div class="recent-calls" id="recentCalls"></div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-star"></i> Favorites</h3>
+                        <div class="favorites-list" id="favoritesList"></div>
+                        <button class="add-favorite-btn" onclick="showAddFavorite()">
+                            <i class="fas fa-plus"></i> Add Favorite
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="chat-area" id="chatPanel">
+                    <div class="chat-room-card">
+                        <div class="chat-room-header">
+                            <div>
+                                <h3>Creator Chat Room</h3>
+                                <p class="chat-room-subtitle">Live conversations with your community, seamless moderation, and instant reactions.</p>
+                            </div>
+                            <div class="chat-room-meta">
+                                <span class="chat-room-badge"><i class="fas fa-users"></i> 24 online</span>
+                                <span class="chat-room-badge secondary"><i class="fas fa-bolt"></i> 12 active</span>
+                            </div>
+                        </div>
+
+                        <div class="messages-container" id="messagesContainer">
+                            <div class="messages-header">
+                                <div>
+                                    <h4>Global Chat</h4>
+                                    <span>Public room where all active users can join.</span>
+                                </div>
+                                <div class="chat-actions">
+                                    <button class="action-btn" onclick="clearChat()" title="Clear Chat">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="action-btn" onclick="exportChat()" title="Export Chat">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="messages" id="messages"></div>
+                            <div class="typing-indicator" id="typingIndicator">No one is typing</div>
+                        </div>
+
+                        <div class="chat-input-panel">
+                            <div class="chat-input-left">
+                                <button class="input-action-btn" onclick="attachFile()" title="Attach File">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <button class="input-action-btn" onclick="sendEmoji()" title="Send Emoji">
+                                    <i class="fas fa-smile"></i>
+                                </button>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Type your message..." 
+                                autocomplete="off"
+                            >
+                            <button class="send-btn" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="startNewCall()">
+                    <i class="fas fa-phone"></i>
+                    <span>New Call</span>
+                </button>
+                <button class="quick-action-btn" onclick="showDashboardPanel('chat')">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Chat Room</span>
+                </button>
+                <button class="quick-action-btn" onclick="showDashboardPanel('online')">
+                    <i class="fas fa-users"></i>
+                    <span>Online</span>
+                </button>
+                <button class="quick-action-btn" onclick="showDashboardPanel('recent')">
+                    <i class="fas fa-history"></i>
+                    <span>Recent Calls</span>
+                </button>
+                <button class="quick-action-btn" onclick="startLiveStream()">
+                    <i class="fas fa-stream"></i>
+                    <span>Live Stream</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div class="emoji-picker" id="emojiPicker">
+        <div class="emoji-grid"></div>
+    </div>
+
+    <!-- Multi-Game Modal -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-modal-content">
+            <div class="game-modal-header">
+                <div>
+                    <span class="game-room-icon">🎮</span>
+                    <div>
+                        <h3 id="gameModalTitle">Game Room</h3>
+                        <p class="game-room-description" id="gameModalSubtitle">Choose a game and jump in.</p>
+                    </div>
+                </div>
+                <button class="close-modal" onclick="closeGameModal()">×</button>
+            </div>
+
+            <div class="game-tabs">
+                <button class="game-tab active" data-game="snake" onclick="selectGameTab('snake')">Snake</button>
+                <button class="game-tab" data-game="football" onclick="selectGameTab('football')">Football</button>
+                <button class="game-tab" data-game="chess" onclick="selectGameTab('chess')">Chess</button>
+                <button class="game-tab" data-game="ludo" onclick="selectGameTab('ludo')">Ludo</button>
+            </div>
+
+            <div class="game-tab-panels">
+                <div class="game-tab-panel active" id="snakePanel">
+                    <div class="game-status-bar">
+                        <div>Score: <strong id="snakeScore">0</strong></div>
+                        <div>Status: <strong id="snakeStatus">Ready</strong></div>
+                    </div>
+                    <canvas id="snakeCanvas" width="480" height="360"></canvas>
+                    <div class="game-controls">
+                        <button class="btn-secondary" onclick="startSnakeGame()">Start</button>
+                        <button class="btn-secondary" onclick="pauseSnakeGame()">Pause</button>
+                        <button class="btn-primary" onclick="resetSnakeGame()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="game-tab-panel" id="footballPanel">
+                    <div class="game-status-bar">
+                        <div>Goals: <strong id="footballScore">0</strong></div>
+                        <div>Status: <strong id="footballStatus">Ready</strong></div>
+                    </div>
+                    <div class="football-field" id="footballField">
+                        <div class="football-target" id="footballTarget"></div>
+                        <div class="football-ball" id="footballBall"></div>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn-secondary" onclick="shootFootballGoal()">Shoot</button>
+                        <button class="btn-primary" onclick="resetFootballGame()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="game-tab-panel" id="chessPanel">
+                    <div class="game-status-bar">
+                        <div>Turn: <strong id="chessTurn">White</strong></div>
+                        <div>Moves: <strong id="chessMoveCount">0</strong></div>
+                    </div>
+                    <div class="chess-board" id="chessBoard"></div>
+                    <div class="game-controls" style="justify-content: space-between; flex-wrap: wrap;">
+                        <button class="btn-secondary" onclick="resetChessGame()">Reset</button>
+                        <div class="chess-help">Click a piece, then click its target square.</div>
+                    </div>
+                    <div class="chess-log" id="chessLog"></div>
+                </div>
+
+                <div class="game-tab-panel" id="ludoPanel">
+                    <div class="game-status-bar">
+                        <div>Mode: <strong id="ludoModeName">Computer</strong></div>
+                        <div>Dice: <strong id="ludoDice">-</strong></div>
+                    </div>
+                    <div class="ludo-mode-switch">
+                        <button class="btn-secondary" onclick="setLudoMode('computer')">Vs Computer</button>
+                        <button class="btn-secondary" onclick="setLudoMode('online')">Online 2-Player</button>
+                    </div>
+                    <div class="ludo-room-panel" id="ludoRoomPanel">
+                        <input type="text" id="ludoRoomInput" placeholder="Room code" maxlength="6">
+                        <button class="btn-primary" onclick="createLudoRoom()">Create Room</button>
+                        <button class="btn-secondary" onclick="joinLudoRoom()">Join Room</button>
+                    </div>
+                    <div class="ludo-room-status" id="ludoRoomStatus">Room: none</div>
+                    <div class="ludo-board" id="ludoBoard"></div>
+                    <div class="game-controls" style="flex-wrap: wrap; gap: 12px;">
+                        <button class="btn-secondary" onclick="rollLudoDice()">Roll Dice</button>
+                        <span class="ludo-instruction" id="ludoInstruction">Use dice then move a token.</span>
+                        <div id="ludoTokenButtons"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div class="modal" id="fileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Attach File</h3>
+                <button class="close-modal" onclick="closeFileModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="fileInput" onchange="handleFileUpload()">
+                <div class="file-preview" id="filePreview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeFileModal()">Cancel</button>
+                <button class="btn-primary" onclick="uploadFile()">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Gift Modal -->
+    <div class="modal" id="giftModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#1a1a2e; border-radius:20px; padding:30px; max-width:420px; width:90%; border:1px solid rgba(102,126,234,0.4);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:white;">🎁 Send a Gift to <span id="giftTargetName" style="color:#667eea;"></span></h3>
+                <button onclick="closeGiftModal()" style="background:none; border:none; color:#999; font-size:22px; cursor:pointer;">×</button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;" id="giftGrid"></div>
+            <div id="giftAlert" style="display:none; padding:10px; border-radius:8px; font-size:13px; margin-bottom:12px;"></div>
+            <button onclick="confirmGift()" style="width:100%; padding:14px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer;">
+                Send Gift 💎
+            </button>
+        </div>
+    </div>
+
+    <div class="support-widget" id="supportWidget">
+        <div class="support-panel" id="supportPanel">
+            <div class="support-panel-header">
+                <div>
+                    <h4>TM Live Support</h4>
+                    <p>24/7 AI assistant</p>
+                </div>
+                <button id="supportCloseBtn" aria-label="Close support chat">×</button>
+            </div>
+            <div class="support-panel-body" id="supportMessages"></div>
+            <div class="support-input">
+                <input id="supportInput" placeholder="Ask the support bot..." autocomplete="off" />
+                <button id="supportSendBtn">Send</button>
+            </div>
+        </div>
+        <button class="support-button" id="supportToggleBtn" aria-label="Open support chat">
+            <i class="fas fa-robot"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="app.js"></script>
+    <!-- Footer -->
+    <footer style="
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+        border-top: 1px solid rgba(102,126,234,0.3);
+        padding: 40px 20px 20px;
+        margin-top: 40px;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    ">
+        <div style="max-width:1000px; margin:0 auto;">
+            <!-- Top section -->
+            <div style="display:flex; flex-wrap:wrap; gap:40px; justify-content:space-between; margin-bottom:30px;">
+                
+                <!-- Brand -->
+                <div style="flex:1; min-width:200px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <img src="favicon.svg" style="width:40px;height:40px;border-radius:10px;">
+                        <span style="font-size:22px; font-weight:700; background:linear-gradient(135deg,#667eea,#764ba2); background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent;">TM Live</span>
+                    </div>
+                    <p style="color:#999; font-size:13px; line-height:1.6;">Professional Video Chat Platform. Connect, stream, and earn with TM Live.</p>
+                    <p style="color:#667eea; font-size:12px; margin-top:10px; font-weight:600;">Built by Babalola Boluwatife</p>
+                </div>
+
+                <!-- Contact -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">📞 Contact Us</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <a href="tel:08156511930" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-phone" style="color:#667eea;"></i> 08156511930
+                        </a>
+                        <a href="https://wa.me/2347086049886" target="_blank" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fab fa-whatsapp" style="color:#25D366;"></i> 07086049886 (WhatsApp)
+                        </a>
+                        <a href="mailto:support@tmlive.com" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-envelope" style="color:#667eea;"></i> support@tmlive.com
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Customer Service -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">🛎️ Customer Service</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <a href="https://wa.me/2347086049886?text=Hello%20TM%20Live%20Support" target="_blank" style="
+                            background: #25D366; color:white; text-decoration:none;
+                            padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;
+                            display:inline-flex; align-items:center; gap:8px; width:fit-content;
+                        ">
+                            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                        </a>
+                        <p style="color:#999; font-size:12px; margin-top:4px;">Available Mon–Sat, 8am–8pm WAT</p>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">🌐 Follow Us</h4>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <a href="#" title="Facebook" style="
+                            width:40px; height:40px; border-radius:10px; background:#1877F2;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" title="Instagram" style="
+                            width:40px; height:40px; border-radius:10px;
+                            background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" title="Twitter/X" style="
+                            width:40px; height:40px; border-radius:10px; background:#000;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px; border:1px solid #333;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-x-twitter"></i>
+                        </a>
+                        <a href="#" title="TikTok" style="
+                            width:40px; height:40px; border-radius:10px; background:#010101;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px; border:1px solid #333;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" title="YouTube" style="
+                            width:40px; height:40px; border-radius:10px; background:#FF0000;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <p style="color:#666; font-size:12px; margin-top:10px;">Coming soon on all platforms!</p>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+                <p style="color:#666; font-size:12px;">© 2026 TM Live. All rights reserved. Built by <strong style="color:#667eea;">Babalola Boluwatife</strong>.</p>
+                <p style="color:#666; font-size:12px;">Made with ❤️ in Nigeria 🇳🇬</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

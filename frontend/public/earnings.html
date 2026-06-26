@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TM Live - Earnings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f1a url('Img/Background 1.jpg') center/cover no-repeat fixed; color: white; min-height: 100vh; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; color: white; text-decoration: none; }
+        .back-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        h1 { font-size: 26px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid rgba(102,126,234,0.3); text-align: center; }
+        .card-icon { font-size: 32px; margin-bottom: 10px; }
+        .card-value { font-size: 28px; font-weight: 700; color: #667eea; }
+        .card-label { font-size: 13px; color: #999; margin-top: 6px; }
+        .card-sub { font-size: 13px; color: #38a169; margin-top: 4px; }
+        .section { background: #1a1a2e; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid rgba(102,126,234,0.2); }
+        .section h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #999; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; background: #0f0f1a; border: 1px solid rgba(102,126,234,0.4); border-radius: 10px; color: white; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #667eea; }
+        .btn { padding: 14px 28px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .gift-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .gift-row:last-child { border-bottom: none; }
+        .gift-info { display: flex; align-items: center; gap: 10px; }
+        .gift-emoji { font-size: 24px; }
+        .gift-details { font-size: 13px; color: #999; }
+        .gift-diamonds { color: #667eea; font-weight: 700; }
+        .empty { text-align: center; color: #666; padding: 20px; }
+        .alert { padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert-success { background: rgba(56,161,105,0.2); border: 1px solid #38a169; color: #38a169; }
+        .alert-error { background: rgba(229,62,62,0.2); border: 1px solid #e53e3e; color: #e53e3e; }
+        .rate-note { font-size: 12px; color: #666; margin-top: 8px; text-align: center; }
+        .progress-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(135deg, #667eea, #764ba2); height: 100%; border-radius: 10px; transition: width 0.5s; }
+        .progress-label { font-size: 11px; color: #999; margin-top: 6px; text-align: right; }
+    </style>
+</head>
+<body>
+    <!-- Page Loader -->
+    <div id="pageLoader" style="
+        position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999;
+        background: #0f0f1a url('Img/Background 1.jpg') center/cover no-repeat;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        transition: opacity 0.5s ease;
+    ">
+        <div style="text-align:center;">
+            <img src="favicon.svg" style="width:80px;height:80px;border-radius:20px;margin-bottom:20px;animation:pulse 1.5s infinite;">
+            <div style="font-size:28px;font-weight:700;color:white;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">TM Live</div>
+            <div style="color:#999;font-size:13px;margin-bottom:24px;">Professional Video Chat Platform</div>
+            <div style="display:flex;gap:8px;justify-content:center;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#667eea;animation:bounce 1.2s infinite 0s;"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#764ba2;animation:bounce 1.2s infinite 0.2s;"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#f5576c;animation:bounce 1.2s infinite 0.4s;"></div>
+            </div>
+        </div>
+        <style>
+            @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-12px)} }
+            @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.8} }
+        </style>
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loader = document.getElementById('pageLoader');
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+            }, 1200);
+        });
+    </script>
+<nav class="navbar">
+    <a class="navbar-brand" href="index.html"><i class="fas fa-video"></i> TM Live</a>
+    <button class="back-btn" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Back</button>
+</nav>
+
+<div class="container">
+    <h1>💰 Earnings Dashboard</h1>
+
+    <div class="cards" id="earningsCards">
+        <div class="card">
+            <div class="card-icon">💎</div>
+            <div class="card-value" id="diamondsVal">-</div>
+            <div class="card-label">Diamonds</div>
+            <div class="card-sub" id="dollarsVal">$0.00</div>
+        </div>
+        <div class="card">
+            <div class="card-icon">📊</div>
+            <div class="card-value" id="totalEarnedVal">-</div>
+            <div class="card-label">Total Diamonds Earned</div>
+        </div>
+        <div class="card">
+            <div class="card-icon">⏳</div>
+            <div class="card-value" id="pendingVal">$0.00</div>
+            <div class="card-label">Pending Payout</div>
+        </div>
+        <div class="card">
+            <div class="card-icon">✅</div>
+            <div class="card-value" id="paidVal">$0.00</div>
+            <div class="card-label">Total Paid Out</div>
+        </div>
+    </div>
+
+    <!-- Progress to minimum payout -->
+    <div class="section">
+        <h2><i class="fas fa-bullseye"></i> Progress to Payout</h2>
+        <div id="progressText" style="font-size:14px; color:#999;">Loading...</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-label" id="progressLabel">$0 / $20 minimum</div>
+    </div>
+
+    <!-- Recent Gifts -->
+    <div class="section">
+        <h2><i class="fas fa-gift"></i> Recent Gifts Received</h2>
+        <div id="giftsList"><div class="empty">No gifts yet</div></div>
+    </div>
+
+    <!-- Request Payout -->
+    <div class="section">
+        <h2><i class="fas fa-university"></i> Request Payout</h2>
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" id="bankName" placeholder="e.g. First Bank, GTBank, Access Bank">
+        </div>
+        <div class="form-group">
+            <label>Account Number</label>
+            <input type="text" id="accountNumber" placeholder="10-digit account number" maxlength="10">
+        </div>
+        <div class="form-group">
+            <label>Account Name</label>
+            <input type="text" id="accountName" placeholder="Name on your bank account">
+        </div>
+        <button class="btn btn-primary" id="payoutBtn" onclick="requestPayout()">
+            <i class="fas fa-paper-plane"></i> Request Payout
+        </button>
+        <div class="rate-note">💎 1 Diamond = $0.01 USD · Minimum payout: $20 (2,000 💎) · Processed within 3-5 business days</div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('tm_token');
+    if (!token) window.location.href = 'login.html';
+
+    async function loadEarnings() {
+        try {
+            const res = await fetch('http://localhost:5001/api/auth/earnings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (!res.ok) return;
+
+            document.getElementById('diamondsVal').textContent = data.diamonds.toLocaleString();
+            document.getElementById('dollarsVal').textContent = `$${data.dollarsAvailable}`;
+            document.getElementById('totalEarnedVal').textContent = data.totalEarned.toLocaleString();
+            document.getElementById('pendingVal').textContent = `$${(data.pendingPayout || 0).toFixed(2)}`;
+            document.getElementById('paidVal').textContent = `$${(data.paidOut || 0).toFixed(2)}`;
+
+            // Progress bar
+            const dollars = parseFloat(data.dollarsAvailable);
+            const percent = Math.min((dollars / 20) * 100, 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressLabel').textContent = `$${dollars.toFixed(2)} / $20.00 minimum`;
+            document.getElementById('progressText').textContent = dollars >= 20
+                ? '🎉 You can request a payout!'
+                : `You need $${(20 - dollars).toFixed(2)} more to reach the minimum payout.`;
+
+            // Recent gifts
+            if (data.recentGifts && data.recentGifts.length > 0) {
+                document.getElementById('giftsList').innerHTML = data.recentGifts.map(g => `
+                    <div class="gift-row">
+                        <div class="gift-info">
+                            <span class="gift-emoji">${g.giftEmoji}</span>
+                            <div>
+                                <div style="font-size:14px;">${g.fromUser} sent <strong>${g.giftName}</strong></div>
+                                <div class="gift-details">${new Date(g.createdAt).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <span class="gift-diamonds">+${g.diamonds} 💎</span>
+                    </div>
+                `).join('');
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function requestPayout() {
+        const bankName = document.getElementById('bankName').value.trim();
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const accountName = document.getElementById('accountName').value.trim();
+
+        if (!bankName || !accountNumber || !accountName) {
+            showAlert('error', 'Please fill in all bank details');
+            return;
+        }
+        if (accountNumber.length !== 10) {
+            showAlert('error', 'Account number must be 10 digits');
+            return;
+        }
+
+        const btn = document.getElementById('payoutBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+        try {
+            const res = await fetch('http://localhost:5001/api/auth/request-payout', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bankName, accountNumber, accountName })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showAlert('success', data.message);
+                loadEarnings();
+            } else {
+                showAlert('error', data.message);
+            }
+        } catch (err) {
+            showAlert('error', 'Something went wrong');
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Payout';
+    }
+
+    function showAlert(type, msg) {
+        const el = document.getElementById(type === 'success' ? 'successAlert' : 'errorAlert');
+        const other = document.getElementById(type === 'success' ? 'errorAlert' : 'successAlert');
+        el.textContent = msg;
+        el.style.display = 'block';
+        other.style.display = 'none';
+    }
+
+    loadEarnings();
+</script>
+    <!-- Footer -->
+    <footer style="
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+        border-top: 1px solid rgba(102,126,234,0.3);
+        padding: 40px 20px 20px;
+        margin-top: 40px;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    ">
+        <div style="max-width:1000px; margin:0 auto;">
+            <!-- Top section -->
+            <div style="display:flex; flex-wrap:wrap; gap:40px; justify-content:space-between; margin-bottom:30px;">
+                
+                <!-- Brand -->
+                <div style="flex:1; min-width:200px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <img src="favicon.svg" style="width:40px;height:40px;border-radius:10px;">
+                        <span style="font-size:22px; font-weight:700; background:linear-gradient(135deg,#667eea,#764ba2); background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent;">TM Live</span>
+                    </div>
+                    <p style="color:#999; font-size:13px; line-height:1.6;">Professional Video Chat Platform. Connect, stream, and earn with TM Live.</p>
+                    <p style="color:#667eea; font-size:12px; margin-top:10px; font-weight:600;">Built by Babalola Boluwatife</p>
+                </div>
+
+                <!-- Contact -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">📞 Contact Us</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <a href="tel:08156511930" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-phone" style="color:#667eea;"></i> 08156511930
+                        </a>
+                        <a href="https://wa.me/2347086049886" target="_blank" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fab fa-whatsapp" style="color:#25D366;"></i> 07086049886 (WhatsApp)
+                        </a>
+                        <a href="mailto:support@tmlive.com" style="color:#999; text-decoration:none; font-size:13px; display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-envelope" style="color:#667eea;"></i> support@tmlive.com
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Customer Service -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">🛎️ Customer Service</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <a href="https://wa.me/2347086049886?text=Hello%20TM%20Live%20Support" target="_blank" style="
+                            background: #25D366; color:white; text-decoration:none;
+                            padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;
+                            display:inline-flex; align-items:center; gap:8px; width:fit-content;
+                        ">
+                            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                        </a>
+                        <p style="color:#999; font-size:12px; margin-top:4px;">Available Mon–Sat, 8am–8pm WAT</p>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div style="flex:1; min-width:180px;">
+                    <h4 style="color:white; margin-bottom:14px; font-size:15px;">🌐 Follow Us</h4>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <a href="#" title="Facebook" style="
+                            width:40px; height:40px; border-radius:10px; background:#1877F2;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" title="Instagram" style="
+                            width:40px; height:40px; border-radius:10px;
+                            background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" title="Twitter/X" style="
+                            width:40px; height:40px; border-radius:10px; background:#000;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px; border:1px solid #333;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-x-twitter"></i>
+                        </a>
+                        <a href="#" title="TikTok" style="
+                            width:40px; height:40px; border-radius:10px; background:#010101;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px; border:1px solid #333;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" title="YouTube" style="
+                            width:40px; height:40px; border-radius:10px; background:#FF0000;
+                            display:flex; align-items:center; justify-content:center;
+                            color:white; text-decoration:none; font-size:18px;
+                            transition:transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <p style="color:#666; font-size:12px; margin-top:10px;">Coming soon on all platforms!</p>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+                <p style="color:#666; font-size:12px;">© 2026 TM Live. All rights reserved. Built by <strong style="color:#667eea;">Babalola Boluwatife</strong>.</p>
+                <p style="color:#666; font-size:12px;">Made with ❤️ in Nigeria 🇳🇬</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
