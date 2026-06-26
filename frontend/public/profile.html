@@ -336,7 +336,7 @@
 
     async function loadProfile() {
         try {
-            const res = await fetch(`http://localhost:5001/api/auth/profile/${profileUsername}`, {
+            const res = await fetch(`https://tm-live-backend.onrender.com/api/auth/profile/${profileUsername}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) {
@@ -419,7 +419,7 @@
         const isFollowing = btn.classList.contains('btn-unfollow');
         const endpoint = isFollowing ? 'unfollow' : 'follow';
         try {
-            const res = await fetch(`http://localhost:5001/api/auth/${endpoint}/${profileUsername}`, {
+            const res = await fetch(`https://tm-live-backend.onrender.com/api/auth/${endpoint}/${profileUsername}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -481,7 +481,7 @@
     async function saveProfile() {
         const bio = document.getElementById('bioInput').value.trim();
         try {
-            const res = await fetch('http://localhost:5001/api/auth/update-profile', {
+            const res = await fetch('https://tm-live-backend.onrender.com/api/auth/update-profile', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

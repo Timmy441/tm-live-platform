@@ -746,7 +746,7 @@ const token = localStorage.getItem('tm_token');
 const myUsername = localStorage.getItem('tm_username');
 if (!token) window.location.href = 'login.html';
 
-const socket = io('http://localhost:5001');
+const socket = io('https://tm-live-backend.onrender.com');
 socket.emit('user_join', myUsername);
 
 let isStreamer = false;
@@ -1010,7 +1010,7 @@ async function sendStreamGift(giftName, giftEmoji, diamonds) {
     try {
         // Get streamer username from stream info
         const streamerUsername = document.getElementById('streamTitle').textContent.replace("'s Live", '');
-        const res = await fetch('http://localhost:5001/api/auth/send-gift', {
+        const res = await fetch('https://tm-live-backend.onrender.com/api/auth/send-gift', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ toUsername: streamerUsername, giftName, giftEmoji, diamonds })

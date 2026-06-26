@@ -229,7 +229,7 @@
         if (!email || !password) return showError('Please fill in all fields');
 
         try {
-            const res = await fetch('http://localhost:5001/api/auth/login', {
+            const res = await fetch('https://tm-live-backend.onrender.com/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -252,7 +252,7 @@
         if (password.length < 6) return showError('Password must be at least 6 characters');
 
         try {
-            const res = await fetch('http://localhost:5001/api/auth/signup', {
+            const res = await fetch('https://tm-live-backend.onrender.com/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })

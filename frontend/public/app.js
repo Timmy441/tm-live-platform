@@ -1,5 +1,5 @@
 // ===== Configuration & State =====
-const socket = io('http://localhost:5001');
+const socket = io('https://tm-live-backend.onrender.com');
 const savedName = localStorage.getItem('tm_username');
 if (!savedName) window.location.href = 'login.html';
 let myName = savedName;
@@ -971,7 +971,7 @@ const tmToken = localStorage.getItem('tm_token');
 
 async function followUser(username, btn) {
     try {
-        const res = await fetch(`http://localhost:5001/api/auth/follow/${username}`, {
+        const res = await fetch(`https://tm-live-backend.onrender.com/api/auth/follow/${username}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${tmToken}` }
         });
@@ -994,7 +994,7 @@ async function followUser(username, btn) {
 
 async function unfollowUser(username, btn) {
     try {
-        const res = await fetch(`http://localhost:5001/api/auth/unfollow/${username}`, {
+        const res = await fetch(`https://tm-live-backend.onrender.com/api/auth/unfollow/${username}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${tmToken}` }
         });
@@ -1017,7 +1017,7 @@ async function unfollowUser(username, btn) {
 
 async function checkFollowStatus(username, btn) {
     try {
-        const res = await fetch(`http://localhost:5001/api/auth/profile/${username}`, {
+        const res = await fetch(`https://tm-live-backend.onrender.com/api/auth/profile/${username}`, {
             headers: { 'Authorization': `Bearer ${tmToken}` }
         });
         const data = await res.json();
@@ -1099,7 +1099,7 @@ async function confirmGift() {
         return;
     }
     try {
-        const res = await fetch('http://localhost:5001/api/auth/send-gift', {
+        const res = await fetch('https://tm-live-backend.onrender.com/api/auth/send-gift', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${tmToken}`,
