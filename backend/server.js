@@ -12,6 +12,7 @@ const { router: authRouter, User } = require('./auth');
 const adminRouter = require('./admin');
 
 const app = express();
+app.set('trust proxy', 1);
 const httpServer = createServer(app);
 
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5001').split(',').map(s => s.trim());
