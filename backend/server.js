@@ -12,6 +12,10 @@ const { router: authRouter, User } = require('./auth');
 const adminRouter = require('./admin');
 
 const app = express();
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:");
+  next();
+});
 app.set('trust proxy', 1);
 const httpServer = createServer(app);
 
